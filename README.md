@@ -1,47 +1,37 @@
-# WARFRONT Gift Store
+# Police Chief-Inspired Gift Store
 
-A responsive, game-inspired digital gift storefront demo built with HTML, CSS and vanilla JavaScript.
+An independent responsive storefront demo inspired by the layout and shopping flow at https://pay.walgames.com/en/store/gift?game_id=176.
 
-## Features
+## Website
 
-- Responsive premium-style storefront with custom CSS artwork
-- Eight sample gift products
-- Product category filters
-- Persistent shopping cart stored in the current browser
-- Quantity editing, subtotal calculation and cart drawer
-- Demo recipient checkout form
-- Accessible labels, dialogs and keyboard dismissal
-- Frequently asked questions section
-- No build step or external JavaScript dependencies
+- Compact game store header with Pack List, Cart and language display
+- Police-themed game banner
+- Gift pack catalog with category filters, product artwork and example prices
+- Add to Cart, quantity adjustments, order summary and persisted cart
+- Gift recipient form with player ID, optional name and message
+- Demo order preview
+- Mobile and desktop layouts
+
+This is an original frontend implementation rather than a direct copy of the reference website. All products, prices and artwork are placeholders; the source website could not be fully visually inspected.
 
 ## Run locally
 
-Open `index.html` in a browser, or run:
+Open `index.html` or launch a local web server:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then visit `http://localhost:8000`.
+Open http://localhost:8000.
 
-## Deploy with GitHub Pages
+## Publish via GitHub Pages
 
-1. Open repository Settings.
-2. Select Pages.
-3. Under Build and deployment, choose Deploy from a branch.
-4. Select `main` and `/ (root)`.
-5. Save and wait for GitHub to publish the page.
+In repository Settings > Pages, choose Deploy from a branch, select `main` and `/ (root)`, then save.
 
-The expected Pages URL is `https://error-404y.github.io/WW-A/` once Pages is enabled and deployed.
+Once deployment succeeds, the expected link is https://error-404y.github.io/WW-A/.
 
-## Important
+## Limitations
 
-This is an independent UI concept inspired by modern gaming gift stores. It is not affiliated with WalGames or any game publisher.
+The store is an independent concept and is not affiliated with WALGAMES. It does not collect payment information, process purchases or deliver in-game items. Before launching real sales, implement an authorized game-product inventory source, appropriate payments, server-side order processing, security, policies, and fulfillment.
 
-Products, prices, brands, rewards, and visual artwork are fictional placeholders. No checkout transaction is processed. The project does not accept payments, verify player identities, or deliver virtual goods. Never use this demo to collect payment card details.
-
-To operate a real store, obtain authorization to sell and fulfill the relevant game items, connect an appropriate backend payment provider, configure secure server-side order validation and authentication, and implement actual fulfillment and a privacy policy.
-
-## Configuration
-
-Edit the `products` array in `app.js` to change items and prices. Edit CSS variables in `styles.css` to customize colors. The storefront currently displays USD prices only.
+Change demo products in `app.js`; edit presentation in `styles.css`.
