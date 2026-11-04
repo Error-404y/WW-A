@@ -1,123 +1,42 @@
-const products = [
-  {id:"starter",name:"Starter Supply Pack",type:"BUNDLES",category:"bundles",desc:"Everything a new recruit needs to make a strong first impression.",price:4.99,tag:"BEST FOR BEGINNERS",symbol:"S",shape:"crate",tone:["#cfd7e3","#7d9ab9","#324963"],glow:"#93b8ef"},
-  {id:"gold",name:"Gold Reserve",type:"CURRENCY",category:"currency",desc:"A generous digital currency bundle for building your next strategy.",price:9.99,tag:"POPULAR",symbol:"G",shape:"circle",tone:["#ffe4a3","#d29b32","#6e491d"],glow:"#f8c550"},
-  {id:"elite",name:"Elite Commander Pack",type:"BUNDLES",category:"bundles",desc:"A premium selection of items for dedicated squad leaders.",price:19.99,tag:"TOP PICK",symbol:"E",shape:"crate",tone:["#c4d8fa","#7588bb","#293866"],glow:"#739cff"},
-  {id:"speed",name:"Speed-Up Collection",type:"BOOSTS",category:"boosts",desc:"Advance the pace of progression with a powerful boost set.",price:6.99,tag:"",symbol:"»",shape:"diamond",tone:["#8de9f2","#4ca7c0","#1d4c6e"],glow:"#69dbf6"},
-  {id:"diamond",name:"Diamond Vault",type:"CURRENCY",category:"currency",desc:"A high-value currency pack designed for bigger ambitions.",price:24.99,tag:"GREAT VALUE",symbol:"D",shape:"diamond",tone:["#c8d9ff","#809ad2","#364d84"],glow:"#8ca9fa"},
-  {id:"shield",name:"Defense Protocol",type:"BOOSTS",category:"boosts",desc:"A tactical collection centered on protection and readiness.",price:12.99,tag:"",symbol:"V",shape:"circle",tone:["#b2f0dd","#4eaa93","#21584e"],glow:"#55ccad"},
-  {id:"legend",name:"Legendary Drop",type:"EXCLUSIVE",category:"special",desc:"An exclusive premium-style bundle with standout rewards.",price:49.99,tag:"EXCLUSIVE",symbol:"L",shape:"crate",tone:["#ffe2a6","#bb873e","#613d22"],glow:"#ffbc6b"},
-  {id:"squad",name:"Squad Support Crate",type:"BUNDLES",category:"bundles",desc:"A versatile gift selection for your most trusted teammate.",price:14.99,tag:"",symbol:"W",shape:"crate",tone:["#d6b6ef","#8e65b5","#472f6d"],glow:"#b17ee5"}
+const products=[
+{id:"diamonds100",name:"Diamond Supply Pack",category:"resources",price:4.99,tag:"HOT",description:"A starter resource pack for your next mission.",symbol:"D",shape:"gem",colors:["#9ceaff","#4099d8","#24549e"],glow:"#a2d9ff"},
+{id:"resources",name:"Essential Resources Pack",category:"resources",price:9.99,tag:"",description:"A selection of resources for headquarters upgrades.",symbol:"R",shape:"box",colors:["#e4c88e","#a67d46","#624a30"],glow:"#e8c896"},
+{id:"speedup",name:"Speedup Bundle",category:"boosts",price:4.99,tag:"",description:"A useful bundle to speed up your next upgrades.",symbol:"S",shape:"gem",colors:["#a4f5de","#39a995","#1d675e"],glow:"#b4f4e6"},
+{id:"elite",name:"Elite Supply Crate",category:"special",price:19.99,tag:"POPULAR",description:"An enhanced selection of high-value digital gifts.",symbol:"E",shape:"box",colors:["#eec78a","#d38a30","#7f461c"],glow:"#ffd08e"},
+{id:"coins",name:"Gold Reserve Pack",category:"resources",price:9.99,tag:"",description:"Gold resources for building and strategic upgrades.",symbol:"G",shape:"coin",colors:["#ffe198","#e7b33c","#956116"],glow:"#ffd56b"},
+{id:"construction",name:"Construction Support",category:"boosts",price:14.99,tag:"",description:"A collection designed around faster development.",symbol:"C",shape:"box",colors:["#b5d7f6","#5796ce","#23518b"],glow:"#b4d7fc"},
+{id:"commander",name:"Commander Gift Pack",category:"special",price:49.99,tag:"LIMITED",description:"Premium-style rewards for your trusted teammate.",symbol:"P",shape:"coin",colors:["#ffe5a3","#d4a03e","#7b4d17"],glow:"#ffde8c"},
+{id:"operations",name:"Operations Booster",category:"boosts",price:24.99,tag:"",description:"A powerful assortment of demonstration boosts.",symbol:"O",shape:"gem",colors:["#e0c2ff","#9772cb","#594184"],glow:"#c7a5ef"}
 ];
-const byId = Object.fromEntries(products.map(product => [product.id,product]));
-const cartKey = "warfront-store-cart-v1";
-let cart = {};
-try {
-  const saved = JSON.parse(localStorage.getItem(cartKey) || "{}");
-  if(saved && typeof saved === "object" && !Array.isArray(saved)) {
-    for(const [id,quantity] of Object.entries(saved)) {
-      if(byId[id] && Number.isInteger(quantity) && quantity > 0 && quantity <= 99) cart[id] = quantity;
-    }
-  }
-} catch {}
-const $ = selector => document.querySelector(selector);
-const money = amount => new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(amount);
-const totalCount = () => Object.values(cart).reduce((a,b)=>a+b,0);
-const subtotal = () => Object.entries(cart).reduce((sum,[id,quantity])=>sum+byId[id].price*quantity,0);
-function saveCart(){try{localStorage.setItem(cartKey,JSON.stringify(cart));}catch{}}
-function renderProducts(filter="all"){
- const selected = filter === "all" ? products : products.filter(product=>product.category===filter);
- $("#resultCount").textContent = String(selected.length).padStart(2,"0");
- $("#productGrid").innerHTML = selected.map(product=>`<article class="product-card">
-  ${product.tag?`<span class="product-tag">${product.tag}</span>`:""}
-  <div class="product-art ${product.shape}" style="--tone1:${product.tone[0]};--tone2:${product.tone[1]};--tone3:${product.tone[2]};--glow:${product.glow}"><div class="product-shape"><span>${product.symbol}</span></div></div>
-  <div class="product-card-body"><div class="product-type">${product.type}</div><h3 class="product-title">${product.name}</h3><p class="product-desc">${product.desc}</p><div class="product-bottom"><div><div class="price-label">PRICE</div><strong class="product-price">${money(product.price)}</strong></div><button type="button" class="add-button" data-add="${product.id}" aria-label="Add ${product.name} to cart">+</button></div></div>
- </article>`).join("");
-}
-function renderCart(){
- const count=totalCount();
- $("#cartCount").textContent=count;
- $("#drawerCartCount").textContent=`(${count})`;
- $("#cartSubtotal").textContent=money(subtotal());
- $("#checkoutTotal").textContent=money(subtotal());
- $("#checkoutButton").disabled=count===0;
- const list=Object.entries(cart);
- $("#cartItems").innerHTML=list.length?list.map(([id,quantity])=>{
-   const p=byId[id];
-   return `<div class="cart-row"><div class="cart-thumbnail">${p.symbol}</div><div><strong>${p.name}</strong><small>${money(p.price)} each</small><div class="qty-controls"><button type="button" data-change="${id}" data-delta="-1" aria-label="Remove one ${p.name}">−</button><span>${quantity}</span><button type="button" data-change="${id}" data-delta="1" aria-label="Add one ${p.name}">+</button></div></div><div class="cart-row-price">${money(p.price*quantity)}</div></div>`;
- }).join(""):'<div class="empty-cart"><strong>YOUR CART IS EMPTY</strong>Select a gift from the collection to get started.</div>';
- saveCart();
-}
-function updateCart(id,delta){
- const next=(cart[id]||0)+delta;
- if(next<=0)delete cart[id]; else cart[id]=Math.min(99,next);
- renderCart();
-}
-let toastTimeout;
-function toast(message){
- $("#toast").textContent=message;$("#toast").classList.add("show");
- clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>$("#toast").classList.remove("show"),2300);
-}
-function showLayer(which){
- $("#overlay").hidden=false;
- document.body.classList.add("modal-open");
- const isCart=which==="cart";
- $("#cartDrawer").classList.toggle("open",isCart);
- $("#cartDrawer").setAttribute("aria-hidden",String(!isCart));
- $("#checkoutModal").classList.toggle("open",!isCart);
- $("#checkoutModal").setAttribute("aria-hidden",String(isCart));
- setTimeout(()=>{(isCart?$("#closeCart"):$("#closeCheckout")).focus();},60);
-}
-function hideLayers(){
- $("#overlay").hidden=true;
- document.body.classList.remove("modal-open");
- $("#cartDrawer").classList.remove("open");
- $("#checkoutModal").classList.remove("open");
- $("#cartDrawer").setAttribute("aria-hidden","true");
- $("#checkoutModal").setAttribute("aria-hidden","true");
- $("#cartToggle").focus();
-}
-document.querySelectorAll(".filter").forEach(button=>button.addEventListener("click",()=>{
- document.querySelectorAll(".filter").forEach(other=>other.classList.toggle("active",other===button));
- renderProducts(button.dataset.filter);
-}));
-$("#productGrid").addEventListener("click",event=>{
- const button=event.target.closest("[data-add]");
- if(!button)return;
- updateCart(button.dataset.add,1);
- toast("Added to your cart");
-});
-$("#cartItems").addEventListener("click",event=>{
- const button=event.target.closest("[data-change]");
- if(!button)return;
- updateCart(button.dataset.change,Number(button.dataset.delta));
-});
-$("#cartToggle").addEventListener("click",()=>showLayer("cart"));
-$("#closeCart").addEventListener("click",hideLayers);
-$("#closeCheckout").addEventListener("click",hideLayers);
-$("#overlay").addEventListener("click",hideLayers);
-document.addEventListener("keydown",event=>{if(event.key==="Escape" && !$("#overlay").hidden)hideLayers();});
-$("#currencyButton").addEventListener("click",()=>toast("USD is the demo store currency"));
-$("#checkoutButton").addEventListener("click",()=>{
- if(totalCount()===0)return;
- $("#checkoutContents").innerHTML=`<div class="checkout-alert">DEMO MODE — YOUR ORDER WILL NOT BE CHARGED OR DELIVERED.</div>
- <form id="checkoutForm"><label>RECIPIENT PLAYER ID<input name="recipientId" type="text" minlength="3" maxlength="40" autocomplete="off" placeholder="Enter player ID" required></label><label>RECIPIENT NAME <span>(OPTIONAL)</span><input name="recipientName" maxlength="40" type="text" placeholder="Player display name"></label><label>GIFT MESSAGE <span>(OPTIONAL)</span><textarea name="message" maxlength="180" rows="3" placeholder="Add a short message"></textarea></label><div class="summary-row"><span>ORDER TOTAL</span><strong>${money(subtotal())}</strong></div><button class="primary-button full" type="submit">PREVIEW DEMO ORDER <span>↗</span></button></form>`;
- showLayer("checkout");
-});
-$("#checkoutContents").addEventListener("submit",event=>{
- if(event.target.id!=="checkoutForm")return;
- event.preventDefault();
- const data=new FormData(event.target);
- const player=String(data.get("recipientId")||"").trim();
- if(player.length<3)return;
- const amount=money(subtotal());
- $("#checkoutContents").replaceChildren();
- const success=document.createElement("div");success.className="success-box";
- const heading=document.createElement("h4");heading.textContent="DEMO ORDER COMPLETE";
- const message=document.createElement("p");message.textContent=`Your simulated order for player ${player} totals ${amount}. No payment was taken, and no products were delivered.`;
- const close=document.createElement("button");close.type="button";close.className="primary-button full";close.textContent="BACK TO STORE";close.addEventListener("click",hideLayers);
- success.append(heading,message,close);$("#checkoutContents").append(success);
- cart={};renderCart();
-});
-$("#year").textContent=new Date().getFullYear();
-renderProducts();
-renderCart();
+const productMap=Object.fromEntries(products.map(p=>[p.id,p]));
+const storageKey="pcgift-demo-cart-v2";
+let cart={};
+try{const saved=JSON.parse(localStorage.getItem(storageKey)||"{}");if(saved&&typeof saved==="object"&&!Array.isArray(saved)){for(const [id,qty] of Object.entries(saved)){if(productMap[id]&&Number.isInteger(qty)&&qty>0&&qty<=99)cart[id]=qty;}}}catch{}
+const $=id=>document.getElementById(id);
+const money=value=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(value);
+const count=()=>Object.values(cart).reduce((a,b)=>a+b,0);
+const total=()=>Object.entries(cart).reduce((sum,[id,qty])=>sum+productMap[id].price*qty,0);
+function save(){try{localStorage.setItem(storageKey,JSON.stringify(cart));}catch{}}
+function toast(message){const el=$("toast");el.textContent=message;el.classList.add("show");clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.classList.remove("show"),2100)}
+function selectTab(name){const packs=name==="packs";$("packScreen").hidden=!packs;$("cartScreen").hidden=packs;$("tabPacks").classList.toggle("active",packs);$("tabCart").classList.toggle("active",!packs);$("navPacks").classList.toggle("selected",packs);$("navCart").classList.toggle("selected",!packs);if(!packs)renderCart();window.scrollTo({top:Math.max(0,document.querySelector(".store-tabs").getBoundingClientRect().top+window.scrollY-80),behavior:"smooth"})}
+function productHTML(p){return `<article class="product-card"><div class="product-art" style="--tone1:${p.colors[0]};--tone2:${p.colors[1]};--tone3:${p.colors[2]};--glow:${p.glow}">${p.tag?`<span class="product-tag">${p.tag}</span>`:""}<div class="item-shape ${p.shape}"><span>${p.symbol}</span></div></div><div class="product-info"><h3>${p.name}</h3><p class="product-description">${p.description}</p><div class="product-bottom"><span class="price">${money(p.price)}</span><button class="add-button" type="button" data-add="${p.id}" aria-label="Add ${p.name} to cart">Add to Cart</button></div></div></article>`}
+function renderProducts(filter="all"){const selected=filter==="all"?products:products.filter(p=>p.category===filter);$("packCount").textContent=String(selected.length);$("productGrid").innerHTML=selected.map(productHTML).join("")}
+function renderCart(){const n=count();$("navCount").textContent=n;$("tabCount").textContent=n;$("summaryItems").textContent=n;$("summaryTotal").textContent=money(total());$("finalTotal").textContent=money(total());$("modalTotal").textContent=money(total());$("checkoutBtn").disabled=n===0;const rows=Object.entries(cart);$("cartList").innerHTML=rows.length?rows.map(([id,qty])=>{const p=productMap[id];return `<div class="cart-row"><div class="cart-thumbnail">${p.symbol}</div><div class="cart-text"><strong>${p.name}</strong><small>${money(p.price)} each</small><div class="qty"><button type="button" data-id="${id}" data-delta="-1" aria-label="Remove one ${p.name}">−</button><span>${qty}</span><button type="button" data-id="${id}" data-delta="1" aria-label="Add one ${p.name}">+</button></div></div><div class="cart-price">${money(p.price*qty)}</div></div>`}).join(""):'<div class="cart-empty">Your shopping cart is empty. Choose a gift pack to get started.</div>';save()}
+function changeCart(id,difference){const next=(cart[id]||0)+difference;if(next<1)delete cart[id];else cart[id]=Math.min(next,99);renderCart()}
+function openModal(){if(!count())return;$("modalTotal").textContent=money(total());$("modalBackdrop").hidden=false;$("checkoutModal").classList.add("open");$("checkoutModal").setAttribute("aria-hidden","false");document.body.classList.add("lock");setTimeout(()=>$("closeModal").focus(),30)}
+function closeModal(){$("modalBackdrop").hidden=true;$("checkoutModal").classList.remove("open");$("checkoutModal").setAttribute("aria-hidden","true");document.body.classList.remove("lock");$("checkoutBtn").focus()}
+$("navPacks").addEventListener("click",e=>{e.preventDefault();selectTab("packs")});
+$("navCart").addEventListener("click",()=>selectTab("cart"));
+$("tabPacks").addEventListener("click",()=>selectTab("packs"));
+$("tabCart").addEventListener("click",()=>selectTab("cart"));
+$("continueShopping").addEventListener("click",()=>selectTab("packs"));
+$("filters").addEventListener("click",e=>{const button=e.target.closest("[data-filter]");if(!button)return;document.querySelectorAll(".filter").forEach(b=>b.classList.toggle("active",b===button));renderProducts(button.dataset.filter)});
+$("productGrid").addEventListener("click",e=>{const button=e.target.closest("[data-add]");if(!button)return;changeCart(button.dataset.add,1);toast("Pack added to cart")});
+$("cartList").addEventListener("click",e=>{const b=e.target.closest("[data-id]");if(b)changeCart(b.dataset.id,Number(b.dataset.delta))});
+$("checkoutBtn").addEventListener("click",openModal);
+$("closeModal").addEventListener("click",closeModal);
+$("modalBackdrop").addEventListener("click",closeModal);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("modalBackdrop").hidden)closeModal()});
+$("langBtn").addEventListener("click",()=>toast("English is the current demo language"));
+$("modalBody").addEventListener("submit",e=>{if(e.target.id!=="giftForm")return;e.preventDefault();const data=new FormData(e.target);const player=String(data.get("playerId")||"").trim();if(player.length<3)return;const value=money(total());const result=document.createElement("div");result.className="success-message";const title=document.createElement("h3");title.textContent="Gift Order Preview";const paragraph=document.createElement("p");paragraph.textContent=`Demo gift for player ${player}, total ${value}. This is only a preview. No payment was collected and no items were delivered.`;const close=document.createElement("button");close.type="button";close.className="buy-button wide";close.textContent="Return to Store";close.addEventListener("click",()=>{closeModal();selectTab("packs")});result.append(title,paragraph,close);$("modalBody").replaceChildren(result);cart={};renderCart()});
+renderProducts();renderCart();
